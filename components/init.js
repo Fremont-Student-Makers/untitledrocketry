@@ -1,4 +1,4 @@
-const base = '/home/components/';
+const base = '/untitledrocketry/components/';
 
 export async function loadLayout() {
   try {
