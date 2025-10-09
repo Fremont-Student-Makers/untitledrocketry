@@ -272,8 +272,7 @@ footer ul {
 .footer-container {
   display: flex;
   justify-content: space-between;
-  /* flex-direction: column; */
-  /* gap: 32px; */
+  align-items: center;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -311,7 +310,7 @@ footer ul {
   .footer-container {
   display: flex;
   flex-direction: column;
-  /* gap: 32px; */
+  align-items: center;
   max-width: 1200px;
   margin: 0 auto;
 }
