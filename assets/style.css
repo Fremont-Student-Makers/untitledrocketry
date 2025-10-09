@@ -177,6 +177,29 @@ h2 {
   border: 2px solid white;
 }
 
+.member-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.member {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.member img {
+  width: 150px;
+  height: auto;
+}
+
+.member-info {
+  text-align: left;
+}
+
+
 /* === Donate Button === */
 .donate-button {
   background: none;
