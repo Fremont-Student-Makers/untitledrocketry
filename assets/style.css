@@ -162,20 +162,6 @@ h2 {
 }
 
 /* === Members & Projects === */
-.member, .project {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.member img, .project img {
-  width: 90%;
-  max-width: 300px;
-  border: 2px solid white;
-}
 
 .member-grid {
   display: grid;
@@ -359,4 +345,60 @@ html, body {
 .stat-number {
   font-size: 3em;
   font-weight: bold;
+}
+
+
+/* rockets.html */
+.rocket-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+.rocket {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 20px;
+}
+
+.rocket:last-child {
+  border-bottom: none;
+}
+
+.rocket img {
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid white;
+}
+
+.rocket-info {
+  text-align: left;
+  flex-grow: 1;
+}
+
+.rocket-info h3 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #66b2ff;
+}
+
+.rocket-stats {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rocket-stats .stat {
+  font-size: 1em;
+}
+
+.stat-label {
+  font-weight: bold;
+  color: #ccc;
+  margin-right: 10px;
 }
