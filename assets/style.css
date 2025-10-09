@@ -277,6 +277,10 @@ footer ul {
   margin: 0 auto;
 }
 
+.footer-section {
+  flex: 1;
+}
+
 .footer-section h3 {
   color: white;
   font-size: 1.2em;

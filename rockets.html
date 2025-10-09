@@ -28,10 +28,9 @@
         <h3>Mk1</h3>
         <p>Our first attempt. It went up, and that's what counts. We learned a lot from this flight, primarily about stability and motor retention.</p>
         <div class="rocket-stats">
-          <div class="stat"><span class="stat-label">Max Altitude:</span> 250 ft</div>
-          <div class="stat"><span class="stat-label">Flight Time:</span> 42 sec</div>
+          <div class="stat"><span class="stat-label">Max Altitude:</span> <span class="count-up" data-target="250">0</span> ft</div>
           <div class="stat"><span class="stat-label">Flights:</span> 1</div>
-          <div class="stat"><span class="stat-label">Status:</span> Active</div>
+          <div class="stat"><span class="stat-label">Status:</span> Unstable</div>
         </div>
       </div>
     </div>
@@ -41,9 +40,9 @@
         <h3>Mk2</h3>
         <p>Taking the lessons from Mk1, we designed Mk2 to be inherently stable. This rocket flew straight and true, marking our first successful high-power flight.</p>
         <div class="rocket-stats">
-          <div class="stat"><span class="stat-label">Max Altitude:</span> 750 ft</div>
+          <div class="stat"><span class="stat-label">Max Altitude:</span> <span class="count-up" data-target="750">0</span> ft</div>
           <div class="stat"><span class="stat-label">Flights:</span> 3</div>
-          <div class="stat"><span class="stat-label">Status:</span> Active</div>
+          <div class="stat"><span class="stat-label">Status:</span> Stable</div>
         </div>
       </div>
     </div>
@@ -53,9 +52,9 @@
         <h3>Mk3</h3>
         <p>With a focus on modularity and recovery, the Mk3 was our most advanced rocket yet. It featured a dual-deployment system and was successfully recovered after each flight.</p>
         <div class="rocket-stats">
-          <div class="stat"><span class="stat-label">Max Altitude:</span> 1200 ft</div>
+          <div class="stat"><span class="stat-label">Max Altitude:</span> <span class="count-up" data-target="1200">0</span> ft</div>
           <div class="stat"><span class="stat-label">Flights:</span> 5</div>
-          <div class="stat"><span class="stat-label">Status:</span> Active</div>
+          <div class="stat"><span class="stat-label">Status:</span> Recovered</div>
         </div>
       </div>
     </div>
@@ -91,6 +90,36 @@ const observer = new IntersectionObserver((entries, observer) => {
 }, options);
 
 faders.forEach(section => {observer.observe(section);
+});
+
+// Number count-up animation
+const countUpObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.dataset.target, 10);
+            let current = 0;
+            const duration = 2000; // 2 seconds
+            const increment = target / (duration / 16); // 60 fps
+
+            const updateCount = () => {
+                current += increment;
+                if (current < target) {
+                    el.innerText = Math.ceil(current);
+                    requestAnimationFrame(updateCount);
+                } else {
+                    el.innerText = target;
+                }
+            };
+
+            requestAnimationFrame(updateCount);
+            observer.unobserve(el); // Animate only once
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.count-up').forEach(el => {
+    countUpObserver.observe(el);
 });
 </script>
 
