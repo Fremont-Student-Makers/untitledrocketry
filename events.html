@@ -8,25 +8,24 @@
   <link rel="icon" href="graphics/favicon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/style.css">
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 </head>
-  
+
 <body>
 <div id="navbar-container"></div>
-  
+
 <section class="hero-section">
     <h1>EVENTS</h1>
     <p>What's next?</p>
 </section>
-  
+
 <section id="events" class="fade-in-section">
   <h2>Upcoming Events</h2>
-  <ul>
-    <li>November 1, 2025 - First launch at Snow Ranch</li>
-  </ul>
+  <div id='calendar'></div>
 </section>
 
 <div id="footer-container"></div>
-</section>
 
 <!-- Container for the navbar -->
 
@@ -35,10 +34,10 @@
     loadLayout(); // call it here, not in `onload`
 </script>
 
-  
+
 <script src="components/navbar.js"></script>
 <script src="components/navbar-loader.js"></script>
-  
+
 <script>
 // Fade-in on scroll
 const faders = document.querySelectorAll('.fade-in-section');
@@ -54,8 +53,24 @@ const observer = new IntersectionObserver((entries, observer) => {
 
 faders.forEach(section => {observer.observe(section);
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: [
+      {
+        title: 'First launch at Snow Ranch',
+        start: '2025-11-01'
+      }
+    ]
+  });
+
+  calendar.render();
+});
 </script>
 
-  
+
 </body>
 </html>
