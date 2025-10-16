@@ -39,7 +39,7 @@
       <p>National Finalists</p>
     </div>
     <div class="stat">
-      <h3 class="stat-number" data-target="1000">0</h3>
+      <h3 id="max-altitude" class="stat-number" data-target="1000">0</h3>
       <p>Max Altitude (ft)</p>
     </div>
   </div>
@@ -92,7 +92,10 @@ const animateNumbers = () => {
   const statNumbers = document.querySelectorAll('.stat-number');
   statNumbers.forEach(statNumber => {
     const target = +statNumber.getAttribute('data-target');
-    const duration = 2000; // 2 seconds
+    let duration = 2000; // 2 seconds
+    if (statNumber.id === 'max-altitude') {
+      duration = 1000; // 1 second for max altitude
+    }
     const stepTime = Math.abs(Math.floor(duration / target));
     let current = 0;
     const timer = setInterval(() => {
