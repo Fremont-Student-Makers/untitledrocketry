@@ -158,7 +158,11 @@ h2 {
   font-size: 1.8em;
   margin-bottom: 16px;
   border-bottom: 1px solid white;
-  display: inline-block;
+  display: block;
+}
+
+#partners a {
+    display: block;
 }
 
 /* === Members & Projects === */
