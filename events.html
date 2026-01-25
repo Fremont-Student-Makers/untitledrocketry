@@ -10,6 +10,30 @@
   <link rel="stylesheet" href="assets/style.css">
   <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+  <style>
+    .event-tooltip {
+      position: absolute;
+      background-color: #222;
+      border: 2px solid white;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      z-index: 10000;
+      max-width: 250px;
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+    .event-tooltip-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #66b2ff;
+    }
+    .event-tooltip-detail {
+      margin: 4px 0;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 
 <body>
@@ -79,17 +103,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     ],
-    eventClick: function(info) {
+    eventMouseEnter: function(info) {
       var event = info.event;
-      var details = `Event: ${event.title}\n`;
-      details += `Time: ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n`;
+      var tooltip = document.createElement('div');
+      tooltip.className = 'event-tooltip';
+      
+      let html = `<div class="event-tooltip-title">${event.title}</div>`;
+      
+      if (event.start) {
+        const timeStr = event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const endTimeStr = event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+        html += `<div class="event-tooltip-detail"><strong>Time:</strong> ${timeStr}${endTimeStr ? ' - ' + endTimeStr : ''}</div>`;
+      }
+      
       if (event.extendedProps.location) {
-        details += `Location: ${event.extendedProps.location}\n`;
+        html += `<div class="event-tooltip-detail"><strong>Location:</strong> ${event.extendedProps.location}</div>`;
       }
+      
       if (event.extendedProps.description) {
-        details += `Details: ${event.extendedProps.description}`;
+        html += `<div class="event-tooltip-detail"><strong>Details:</strong> ${event.extendedProps.description}</div>`;
       }
-      alert(details);
+      
+      tooltip.innerHTML = html;
+      document.body.appendChild(tooltip);
+      
+      const rect = info.el.getBoundingClientRect();
+      tooltip.style.top = (rect.top + window.scrollY - tooltip.offsetHeight - 10) + 'px';
+      tooltip.style.left = (rect.left + window.scrollX + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+      
+      info.el.tooltip = tooltip;
+    },
+    eventMouseLeave: function(info) {
+      if (info.el.tooltip) {
+        info.el.tooltip.remove();
+        info.el.tooltip = null;
+      }
     }
   });
 
