@@ -63,8 +63,34 @@ document.addEventListener('DOMContentLoaded', function() {
       {
         title: 'First launch at Snow Ranch',
         start: '2025-11-01'
+      },
+      {
+        title: 'Rocket Launch - Ohlone Newark Campus',
+        startTime: '09:00',
+        endTime: '13:00',
+        daysOfWeek: [6],
+        rrule: {
+          freq: 'weekly',
+          dtstart: '2026-01-31'
+        },
+        extendedProps: {
+          location: 'Ohlone Newark Campus',
+          description: 'Weekly rocket launch event'
+        }
       }
-    ]
+    ],
+    eventClick: function(info) {
+      var event = info.event;
+      var details = `Event: ${event.title}\n`;
+      details += `Time: ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n`;
+      if (event.extendedProps.location) {
+        details += `Location: ${event.extendedProps.location}\n`;
+      }
+      if (event.extendedProps.description) {
+        details += `Details: ${event.extendedProps.description}`;
+      }
+      alert(details);
+    }
   });
 
   calendar.render();
