@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ARC Regression Optimizer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen p-6">
+
+<div class="max-w-5xl mx-auto">
+
+<h1 class="text-3xl font-bold mb-6 text-center">
+ARC F41 Regression Optimizer
+</h1>
+
+<!-- INPUT NEW FLIGHT DATA -->
+<div class="bg-slate-800 p-6 rounded-2xl mb-8">
+<h2 class="text-xl font-semibold mb-4">Add Flight Data</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+<input id="alt" placeholder="Altitude (ft)" class="p-2 rounded bg-slate-700">
+<input id="mass" placeholder="Flight Mass (g)" class="p-2 rounded bg-slate-700">
+<input id="temp" placeholder="Temp (°C)" class="p-2 rounded bg-slate-700">
+<input id="pressure" placeholder="Pressure (hPa)" class="p-2 rounded bg-slate-700">
+<input id="humidity" placeholder="Humidity (%)" class="p-2 rounded bg-slate-700">
+
+</div>
+
+<button onclick="addFlight()" 
+class="mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl">
+Add Flight
+</button>
+
+</div>
+
+<!-- DATA TABLE -->
+<div class="bg-slate-800 p-6 rounded-2xl mb-8">
+<h2 class="text-xl font-semibold mb-4">Flight Dataset</h2>
+<table class="w-full text-sm">
+<thead>
+<tr class="border-b border-slate-600">
+<th>Altitude</th>
+<th>Mass</th>
+<th>Temp</th>
+<th>Pressure</th>
+<th>Humidity</th>
+</tr>
+</thead>
+<tbody id="dataTable"></tbody>
+</table>
+</div>
+
+<!-- REGRESSION OUTPUT -->
+<div class="bg-slate-800 p-6 rounded-2xl mb-8">
+<h2 class="text-xl font-semibold mb-4">Fitted Model</h2>
+<div id="modelOutput" class="text-lg"></div>
+</div>
+
+<!-- OPTIMIZER -->
+<div class="bg-slate-800 p-6 rounded-2xl">
+<h2 class="text-xl font-semibold mb-4">Optimize New Launch</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+<input id="targetAlt" placeholder="Target Alt (ft)" class="p-2 rounded bg-slate-700">
+<input id="newMass" placeholder="Current Mass (g)" class="p-2 rounded bg-slate-700">
+<input id="newTemp" placeholder="Temp (°C)" class="p-2 rounded bg-slate-700">
+<input id="newPressure" placeholder="Pressure (hPa)" class="p-2 rounded bg-slate-700">
+<input id="newHumidity" placeholder="Humidity (%)" class="p-2 rounded bg-slate-700">
+
+</div>
+
+<button onclick="optimize()" 
+class="mt-4 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl">
+Compute Required Mass
+</button>
+
+<div id="optOutput" class="mt-4 text-lg"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let flights = [];
+
+// Density calculator
+function airDensity(tempC, pressure_hPa, humidity) {
+
+const pressure = pressure_hPa * 100;
+const T = tempC + 273.15;
+const RH = humidity / 100;
+
+const Psat = 610.94 * Math.exp((17.625 * tempC) / (tempC + 243.04));
+const Pv = RH * Psat;
+const Pd = pressure - Pv;
+
+const Rd = 287.05;
+const Rv = 461.5;
+
+return (Pd / (Rd * T)) + (Pv / (Rv * T));
+}
+
+function addFlight() {
+
+const alt = parseFloat(document.getElementById("alt").value);
+const mass = parseFloat(document.getElementById("mass").value);
+const temp = parseFloat(document.getElementById("temp").value);
+const pressure = parseFloat(document.getElementById("pressure").value);
+const humidity = parseFloat(document.getElementById("humidity").value);
+
+flights.push({alt, mass, temp, pressure, humidity});
+
+renderTable();
+fitRegression();
+}
+
+function renderTable() {
+
+let table = document.getElementById("dataTable");
+table.innerHTML = "";
+
+flights.forEach(f => {
+table.innerHTML += `
+<tr>
+<td>${f.alt}</td>
+<td>${f.mass}</td>
+<td>${f.temp}</td>
+<td>${f.pressure}</td>
+<td>${f.humidity}</td>
+</tr>`;
+});
+}
+
+let alpha = 1;
+let C = 1;
+
+function fitRegression() {
+
+if (flights.length < 2) return;
+
+let x = [];
+let y = [];
+
+flights.forEach(f => {
+let rho = airDensity(f.temp, f.pressure, f.humidity);
+x.push(Math.log(f.mass));
+y.push(Math.log(f.alt * rho));
+});
+
+// Compute linear regression
+let n = x.length;
+let sumX = x.reduce((a,b)=>a+b,0);
+let sumY = y.reduce((a,b)=>a+b,0);
+let sumXY = x.map((xi,i)=>xi*y[i]).reduce((a,b)=>a+b,0);
+let sumXX = x.map(xi=>xi*xi).reduce((a,b)=>a+b,0);
+
+let slope = (n*sumXY - sumX*sumY) / (n*sumXX - sumX*sumX);
+let intercept = (sumY - slope*sumX)/n;
+
+alpha = -slope;
+C = Math.exp(intercept);
+
+document.getElementById("modelOutput").innerHTML = `
+α (mass exponent): <span class="text-green-400 font-bold">${alpha.toFixed(4)}</span><br>
+C constant: <span class="text-green-400 font-bold">${C.toFixed(2)}</span>
+`;
+}
+
+function optimize() {
+
+const targetAlt = parseFloat(document.getElementById("targetAlt").value);
+const mass = parseFloat(document.getElementById("newMass").value);
+const temp = parseFloat(document.getElementById("newTemp").value);
+const pressure = parseFloat(document.getElementById("newPressure").value);
+const humidity = parseFloat(document.getElementById("newHumidity").value);
+
+let rho = airDensity(temp, pressure, humidity);
+
+// Predicted altitude
+let predicted = C * (1/rho) * (1/Math.pow(mass, alpha));
+
+// Required mass
+let requiredMass = Math.pow((C/(rho*targetAlt)), 1/alpha);
+
+let delta = requiredMass - mass;
+
+document.getElementById("optOutput").innerHTML = `
+Predicted Altitude: ${predicted.toFixed(1)} ft<br>
+Required Total Mass: <span class="text-xl text-green-400">${requiredMass.toFixed(1)} g</span><br>
+${delta > 0 ? "Add" : "Remove"} ${Math.abs(delta).toFixed(1)} g
+`;
+}
+
+</script>
+
+</body>
+</html>
