@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://untitledrocketry.fremontstudentmakers.org/sitemap.xml
